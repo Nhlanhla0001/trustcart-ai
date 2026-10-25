@@ -40,10 +40,11 @@ jobs:
       - name: Generate Wayfinder types
         run: php artisan wayfinder:generate --with-form
 
+      - name: Type-check
+        run: npm run types:check
+
+      - name: Build front end
+        run: npm run build
+
       - name: Lint, analyse, test
         run: composer test
-
-      - name: Type-check and build
-        run: |
-          npm run types:check
-          npm run build
