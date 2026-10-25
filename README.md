@@ -301,14 +301,14 @@ Read the threat model and residual risks in [docs/SECURITY.md](docs/SECURITY.md)
 
 ## Hackathon status
 
-| Requirement                                          | Status                                                                                            |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Meaningful PayPal integration                        | Implemented server-side (Orders v2, sandbox); **not yet exercised with real sandbox credentials** |
-| Meaningful AI integration                            | Implemented (requirement parsing + grounded narrative, with fallback)                             |
+| Requirement                                          | Status                                                                                                      |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Meaningful PayPal integration                        | Implemented server-side (Orders v2, sandbox); **not yet exercised with real sandbox credentials**           |
+| Meaningful AI integration                            | Implemented (requirement parsing + grounded narrative, with fallback)                                       |
 | Public repository                                    | **Public:** [github.com/Nhlanhla0001/trustcart-ai](https://github.com/Nhlanhla0001/trustcart-ai) · CI green |
-| Demo video (≤ 3 min)                                 | Script and shot list ready in [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md); **not recorded**        |
-| Devpost text submission                              | Draft in [docs/DEVPOST-SUBMISSION.md](docs/DEVPOST-SUBMISSION.md); **not submitted**              |
-| Keep project available through judging (15 Dec 2026) | Depends on deployment                                                                             |
+| Demo video (≤ 3 min)                                 | Script and shot list ready in [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md); **not recorded**                  |
+| Devpost text submission                              | Draft in [docs/DEVPOST-SUBMISSION.md](docs/DEVPOST-SUBMISSION.md); **not submitted**                        |
+| Keep project available through judging (15 Dec 2026) | Depends on deployment                                                                                       |
 
 Rules verification and eligibility notes: [docs/HACKATHON-COMPLIANCE.md](docs/HACKATHON-COMPLIANCE.md).
 
