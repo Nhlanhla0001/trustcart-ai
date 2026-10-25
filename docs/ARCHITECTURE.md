@@ -88,10 +88,14 @@ verdict first, so a high-scoring rejected product can never outrank a qualified 
 
 ### Two calls, no autonomy
 
-| Call                   | Input                                                                         | Output                  | Validation                                                                    |
-| ---------------------- | ----------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------- |
-| Requirement extraction | The buyer's sentence, wrapped in `<request>` delimiters                       | JSON object             | Normalised against closed category/feature/spec vocabularies; numbers bounded |
-| Narrative              | Facts: requirements, selected product, checks, rejected alternatives, closest | Plain text ≤ 1200 chars | Stored as advisory text; no parsing back into state                           |
+Both calls run through the official **Laravel AI SDK** (`laravel/ai`) behind
+`App\Services\Ai\AiClient`. Requirement extraction uses provider-enforced structured output; the
+narrative uses a plain anonymous agent.
+
+| Call                   | Input                                                                         | Output                              | Validation                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| Requirement extraction | The buyer's sentence, wrapped in `<request>` delimiters                       | Structured object (SDK JSON schema) | Schema enum for category/features/currency, then normalised again in PHP; numbers bounded |
+| Narrative              | Facts: requirements, selected product, checks, rejected alternatives, closest | Plain text ≤ 1200 chars             | Stored as advisory text; no parsing back into state                                       |
 
 ### Prompt injection
 
@@ -105,9 +109,13 @@ verdict first, so a high-scoring rejected product can never outrank a qualified 
 ### Provider resilience
 
 `AiClient` iterates the configured provider chain (`TRUSTCART_AI_PROVIDER` then
-`TRUSTCART_AI_FALLBACK`). It records which provider answered and why a fallback occurred. With no
-key, `RequirementExtractor` uses its deterministic parser and the record stores
+`TRUSTCART_AI_FALLBACK`) using the Laravel AI SDK's provider drivers. It records which provider
+answered. With no key, `RequirementExtractor` uses its deterministic parser and the record stores
 `extraction_source = fallback`.
+
+The SDK's own failover is deliberately not the only mechanism: TrustCart catches any `Throwable`
+per provider so a retired model, schema rejection or transport failure still falls through to the
+next provider and then to the deterministic parser.
 
 ## 5. Approval lifecycle
 

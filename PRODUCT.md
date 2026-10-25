@@ -68,9 +68,9 @@ card data. No claim that PayPal capabilities exist beyond the documented Orders 
 
 - Stack: Laravel 12 + Inertia React + Tailwind v4 + SQLite. The brief's "preferred stack" named
   Next.js; the operator chose Laravel for this build. Product behaviour is unchanged.
-- AI provider is configuration, not architecture: Gemini, DeepSeek or OpenAI-compatible via
-  environment variables, with a deterministic extractor fallback so the demo never dies on a
-  missing key.
+- AI runs through the official **Laravel AI SDK** (`laravel/ai`): Gemini primary, DeepSeek
+  fallback, structured output for requirements, and a deterministic parser if neither is
+  available. Laravel Boost is installed as a dev-only agent toolkit.
 - Payments are PayPal Orders v2 in sandbox only. Without sandbox credentials the app reports
   "PayPal not configured" and refuses to fabricate a payment.
 - Guest sessions are tracked in the browser's Laravel session; no account is required to demo.

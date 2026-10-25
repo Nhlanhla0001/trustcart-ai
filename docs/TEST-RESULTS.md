@@ -1,4 +1,4 @@
-# Test results
+﻿# Test results
 
 Recorded **25 October 2026** on Windows 11, PHP 8.5.0, Node 24, SQLite, Chrome (Playwright).
 
@@ -11,10 +11,10 @@ This file records what was actually run. It is not a claim that the product is f
 ```
 pint ......................... passed
 phpstan (level 7) ............ passed, 0 errors
-phpunit ...................... 82 tests, 328 assertions, passed
+phpunit ...................... 85 tests, 340 assertions, passed
 ```
 
-Duration approximately 26 seconds on the build machine.
+Duration approximately 27 seconds on the build machine.
 
 ### `npm run types:check`
 
@@ -32,20 +32,20 @@ No warnings or lint errors in 81 files
 ### `npm run build`
 
 ```
-✓ built in ~17s
+âœ“ built in ~17s
 ```
 
 ### `npm run test:e2e` (Playwright against `php artisan serve`)
 
 A real browser completed this sequence without console errors or page errors:
 
-1. `/assistant` — entered the reference request, submitted
-2. decision page — recommendation rendered with checks and alternatives
-3. **Review & authorize** — approval instrument rendered
-4. **Change price +12%** — approval became `VOID`, price-change panel rendered
-5. `/audit` — the decision appeared in the browser's audit list
-6. audit record — checks, approval, events and IDs rendered
-7. fresh browser context — impossible-budget request produced a refusal with the closest
+1. `/assistant` â€” entered the reference request, submitted
+2. decision page â€” recommendation rendered with checks and alternatives
+3. **Review & authorize** â€” approval instrument rendered
+4. **Change price +12%** â€” approval became `VOID`, price-change panel rendered
+5. `/audit` â€” the decision appeared in the browser's audit list
+6. audit record â€” checks, approval, events and IDs rendered
+7. fresh browser context â€” impossible-budget request produced a refusal with the closest
    option's full check matrix
 
 ## Scenario coverage
@@ -77,6 +77,22 @@ A real browser completed this sequence without console errors or page errors:
 | Audit scoping                       | `AuditTest::test_a_browser_only_sees_its_own_records`                                                                                                   |
 | Audit events written                | `AuditTest::test_audit_events_are_written_for_the_decision`                                                                                             |
 | Fallback parser                     | `RequirementExtractorTest` (4 tests)                                                                                                                    |
+| SDK structured extraction           | `AiSdkTest::test_requirement_parsing_uses_the_laravel_ai_sdk_structured_agent`                                                                          |
+| SDK narrative generation            | `AiSdkTest::test_narrative_uses_the_laravel_ai_sdk_agent`                                                                                               |
+| SDK provider fallback               | `AiSdkTest::test_provider_failure_falls_back_to_the_next_provider`                                                                                      |
+
+## Live provider smoke test
+
+Unlike the automated suite, this uses real credentials from the local (gitignored) `.env` and is
+**not** part of CI:
+
+```bash
+php scripts/smoke.php
+```
+
+Result on 25 October 2026: structured requirement extraction and narrative generation both
+succeeded through the Laravel AI SDK. The provider chain resolved to `deepseek-chat` during this
+run; the record stored the actual provider and model. No API keys are committed.
 
 ## What is **not** tested
 

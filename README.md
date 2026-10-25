@@ -1,4 +1,4 @@
-# TrustCart AI
+﻿# TrustCart AI
 
 **AI that knows when not to buy.**
 
@@ -38,16 +38,16 @@ product meets the mandatory requirements, TrustCart recommends nothing and shows
 
 ## What the demo proves
 
-| Scenario                                                    | What happens                                                                                           |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Reference request: wireless headphones, ≤ $100, ANC, ≥ 20 h | `Auralis NC-40` qualifies; the cheaper `PulseWave Lite` is rejected for lacking ANC.                   |
-| Impossible budget (`< $40`)                                 | Refusal with the closest option and the exact failing check.                                           |
-| Missing specification                                       | `Nimbus Halo` is `unverified`, not a pass.                                                             |
-| Price change after approval                                 | A merchant sync changes the price, the approval becomes `VOID`, and a new priced approval is required. |
-| Buyer cancels at PayPal                                     | Order becomes `cancelled`; no capture is attempted, no paid status is written.                         |
-| Duplicate capture                                           | An atomic order claim plus a stable PayPal request ID prevents a second capture.                       |
-| Instruction-like catalog text                               | Text in a product description is quarantined, displayed to the operator, and never sent to the model.  |
-| Successful purchase                                         | Explicit approval → PayPal sandbox → server capture → verified `COMPLETED` status and capture ID.      |
+| Scenario                                                        | What happens                                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Reference request: wireless headphones, â‰¤ $100, ANC, â‰¥ 20 h | `Auralis NC-40` qualifies; the cheaper `PulseWave Lite` is rejected for lacking ANC.                    |
+| Impossible budget (`< $40`)                                     | Refusal with the closest option and the exact failing check.                                            |
+| Missing specification                                           | `Nimbus Halo` is `unverified`, not a pass.                                                              |
+| Price change after approval                                     | A merchant sync changes the price, the approval becomes `VOID`, and a new priced approval is required.  |
+| Buyer cancels at PayPal                                         | Order becomes `cancelled`; no capture is attempted, no paid status is written.                          |
+| Duplicate capture                                               | An atomic order claim plus a stable PayPal request ID prevents a second capture.                        |
+| Instruction-like catalog text                                   | Text in a product description is quarantined, displayed to the operator, and never sent to the model.   |
+| Successful purchase                                             | Explicit approval â†’ PayPal sandbox â†’ server capture â†’ verified `COMPLETED` status and capture ID. |
 
 ### 1. A decision is inspectable, not persuasive
 
@@ -91,12 +91,14 @@ an instruction-like payload is flagged and excluded from prompts.
 
 ## Stack
 
-- **Laravel 13** (PHP 8.3+; developed on PHP 8.5) — server authority, rules engine, PayPal client
-- **Inertia v3 + React 19 + TypeScript** — one page component per record
-- **Tailwind CSS v4** — custom "decision record" design system, no component-library default look
+- **Laravel 13** (PHP 8.3+; developed on PHP 8.5) â€” server authority, rules engine, PayPal client
+- **Inertia v3 + React 19 + TypeScript** â€” one page component per record
+- **Tailwind CSS v4** â€” custom "decision record" design system, no component-library default look
 - **SQLite** for the prototype (MySQL/Postgres work with a connection change)
-- **Gemini and DeepSeek** via server-side HTTP; provider is configuration, not architecture
-- **PHPUnit** (82 tests) and **Playwright** for browser-flow checks
+- **Laravel AI SDK** (`laravel/ai`) â€” Gemini primary, DeepSeek fallback, provider-enforced
+  structured output, deterministic parser when no provider is available
+- **Laravel Boost** (dev only) â€” guidelines, skills and MCP tooling for coding agents
+- **PHPUnit** (85 tests) and **Playwright** for browser-flow checks
 
 No payment secrets reach the browser. No card data is stored.
 
@@ -144,9 +146,15 @@ products, and voids any live approvals so the price-change demo can be repeated.
 
 ## AI configuration
 
-The model is used for two narrow jobs: parsing a requirement and writing an explanation. With
-no key, a deterministic parser takes over and the decision record says so — the demo never dies
-because a provider is unavailable.
+The model is used for two narrow jobs: parsing a requirement and writing an explanation. Both
+run through the **official Laravel AI SDK** (`laravel/ai`), configured in `config/ai.php`.
+
+- Requirement extraction uses the SDK's **structured output** with a closed schema: category,
+  budget, currency, feature keys and numeric minimums. The provider cannot return a feature that
+  is not in TrustCart's vocabulary.
+- Narrative generation uses a plain anonymous agent instructed to use only the supplied facts.
+- The SDK is wrapped by `App\Services\Ai\AiClient`, which tries the configured providers in order
+  and degrades to the deterministic parser when none is available.
 
 ```dotenv
 TRUSTCART_AI_PROVIDER=gemini
@@ -154,18 +162,33 @@ TRUSTCART_AI_FALLBACK=deepseek
 
 GEMINI_API_KEY=...
 GEMINI_MODEL=gemini-3.5-flash
+GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 
 DEEPSEEK_API_KEY=...
 DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
 ```
 
-Supported providers: `gemini`, `deepseek`. The fallback is tried automatically on transport
-errors, 429s, 5xx responses and retired model names. The record stores which provider and model
-actually answered, plus the failure code when the deterministic parser was used instead.
+Supported providers: `gemini`, `deepseek` (the SDK also supports OpenAI, Anthropic and others;
+TrustCart's vocabulary and config are limited to these two). The fallback is tried automatically
+on transport errors, 429s, 5xx responses and retired model names. The record stores which provider
+and model actually answered, plus the failure code when the deterministic parser was used instead.
 
 **What the model receives:** your sentence, and the parsed requirement when writing the
 narrative. **What it never receives:** product descriptions, the catalog page, a price it can
 change, stock, payment details, or the ability to call PayPal.
+
+### Laravel Boost
+
+Boost is installed as a development dependency only. It adds guidelines, skills and MCP tooling
+for coding agents; it has no runtime effect and is not part of the payment path.
+
+```bash
+php artisan boost:install --guidelines --skills --mcp
+```
+
+Generated agent files (`AGENTS.md`, `boost.json`, `.agents/`, `.codex/`, `opencode.json`) are
+local-only and gitignored.
 
 ---
 
@@ -175,7 +198,7 @@ TrustCart refuses to fake a payment. Until credentials exist, the authorization 
 what is missing and disables checkout.
 
 1. Create/sign in to a PayPal **developer** account: <https://developer.paypal.com>.
-2. Go to **Apps & Credentials → Sandbox → Create App**.
+2. Go to **Apps & Credentials â†’ Sandbox â†’ Create App**.
 3. Copy the **Client ID** and **Secret** into `.env`:
 
     ```dotenv
@@ -186,8 +209,8 @@ what is missing and disables checkout.
     ```
 
 4. Clear config: `php artisan config:clear`.
-5. Run the flow: decision → **Review & authorize** → tick authorization → **Continue to PayPal**
-   → approve with a **sandbox personal account** → return to TrustCart.
+5. Run the flow: decision â†’ **Review & authorize** â†’ tick authorization â†’ **Continue to PayPal**
+   â†’ approve with a **sandbox personal account** â†’ return to TrustCart.
 
 The integration uses **PayPal Orders v2** (`/v2/checkout/orders`, `.../capture`) with
 server-side OAuth. See [docs/PAYPAL-INTEGRATION.md](docs/PAYPAL-INTEGRATION.md).
@@ -205,7 +228,7 @@ provider failure). This limitation is stated in the submission copy as well.
 ## Tests
 
 ```bash
-php artisan test          # 82 tests, 328 assertions
+php artisan test          # 85 tests, 340 assertions
 npm run types:check       # TypeScript, strict
 npm run build             # Vite production build
 npm run test:e2e          # Playwright browser flow (requires `php artisan serve`)
@@ -214,8 +237,8 @@ npm run test:e2e          # Playwright browser flow (requires `php artisan serve
 Actual result at the time of writing:
 
 ```
-Tests:    82 passed (328 assertions)
-Duration: ~5–7s
+Tests:    85 passed (340 assertions)
+Duration: ~5â€“7s
 ```
 
 Coverage includes: every rule outcome, missing evidence, currency and stock failures, refusal
@@ -232,18 +255,18 @@ scenarios to named tests, and the browser checks that were run.
 
 ```
 Browser (React/Inertia)
-   │  intent, approval, audit
-   ▼
-Laravel controllers ──► DecisionService ──► RequirementExtractor ──► AiClient
-   │                        │                                        (Gemini/DeepSeek)
-   │                        ├──► EvaluationEngine (rules, authoritative)
-   │                        ├──► Recommendation + candidate snapshot
-   │                        └──► AuditLogger
-   │
-   ├──► ApprovalService (price re-read, expiry, invalidation)
-   └──► CheckoutService ──► PayPalClient (Orders v2, sandbox)
-                              │
-                              └──► Order + PaymentEvent + AuditEvent
+   â”‚  intent, approval, audit
+   â–¼
+Laravel controllers â”€â”€â–º DecisionService â”€â”€â–º RequirementExtractor â”€â”€â–º AiClient
+   â”‚                        â”‚                                        (Gemini/DeepSeek)
+   â”‚                        â”œâ”€â”€â–º EvaluationEngine (rules, authoritative)
+   â”‚                        â”œâ”€â”€â–º Recommendation + candidate snapshot
+   â”‚                        â””â”€â”€â–º AuditLogger
+   â”‚
+   â”œâ”€â”€â–º ApprovalService (price re-read, expiry, invalidation)
+   â””â”€â”€â–º CheckoutService â”€â”€â–º PayPalClient (Orders v2, sandbox)
+                              â”‚
+                              â””â”€â”€â–º Order + PaymentEvent + AuditEvent
 ```
 
 More detail, including the payment state machine and failure paths:
@@ -251,8 +274,8 @@ More detail, including the payment state machine and failure paths:
 
 ### Data model
 
-`products` · `shopping_sessions` · `recommendations` · `purchase_approvals` · `orders` ·
-`payment_events` · `audit_events`.
+`products` Â· `shopping_sessions` Â· `recommendations` Â· `purchase_approvals` Â· `orders` Â·
+`payment_events` Â· `audit_events`.
 
 Candidates and checks are snapshotted into the recommendation so a later catalog change cannot
 retroactively rewrite the decision.
@@ -283,7 +306,7 @@ Read the threat model and residual risks in [docs/SECURITY.md](docs/SECURITY.md)
 
 ## Known limitations (truthful list)
 
-- **No real PayPal sandbox capture has been run yet** — credentials were unavailable. Tests cover
+- **No real PayPal sandbox capture has been run yet** â€” credentials were unavailable. Tests cover
   the HTTP contract with fakes, not PayPal's live sandbox.
 - **No webhook receiver.** The synchronous return + capture path is implemented. Webhooks would be
   needed for disputes, refunds and out-of-band status changes; signature verification is not built.
@@ -301,14 +324,14 @@ Read the threat model and residual risks in [docs/SECURITY.md](docs/SECURITY.md)
 
 ## Hackathon status
 
-| Requirement                                          | Status                                                                                                      |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Meaningful PayPal integration                        | Implemented server-side (Orders v2, sandbox); **not yet exercised with real sandbox credentials**           |
-| Meaningful AI integration                            | Implemented (requirement parsing + grounded narrative, with fallback)                                       |
-| Public repository                                    | **Public:** [github.com/Nhlanhla0001/trustcart-ai](https://github.com/Nhlanhla0001/trustcart-ai) · CI green |
-| Demo video (≤ 3 min)                                 | Script and shot list ready in [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md); **not recorded**                  |
-| Devpost text submission                              | Draft in [docs/DEVPOST-SUBMISSION.md](docs/DEVPOST-SUBMISSION.md); **not submitted**                        |
-| Keep project available through judging (15 Dec 2026) | Depends on deployment                                                                                       |
+| Requirement                                          | Status                                                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Meaningful PayPal integration                        | Implemented server-side (Orders v2, sandbox); **not yet exercised with real sandbox credentials**            |
+| Meaningful AI integration                            | Implemented (requirement parsing + grounded narrative, with fallback)                                        |
+| Public repository                                    | **Public:** [github.com/Nhlanhla0001/trustcart-ai](https://github.com/Nhlanhla0001/trustcart-ai) Â· CI green |
+| Demo video (â‰¤ 3 min)                               | Script and shot list ready in [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md); **not recorded**                   |
+| Devpost text submission                              | Draft in [docs/DEVPOST-SUBMISSION.md](docs/DEVPOST-SUBMISSION.md); **not submitted**                         |
+| Keep project available through judging (15 Dec 2026) | Depends on deployment                                                                                        |
 
 Rules verification and eligibility notes: [docs/HACKATHON-COMPLIANCE.md](docs/HACKATHON-COMPLIANCE.md).
 
@@ -319,7 +342,7 @@ Rules verification and eligibility notes: [docs/HACKATHON-COMPLIANCE.md](docs/HA
 ```
 app/
   Http/Controllers/        Home, Assistant, Session, Approval, Checkout, Audit, Catalog, Demo
-  Models/                  Product, ShoppingSession, Recommendation, PurchaseApproval, Order…
+  Models/                  Product, ShoppingSession, Recommendation, PurchaseApproval, Orderâ€¦
   Services/
     Ai/AiClient.php        Gemini/DeepSeek + safe fallback
     RequirementExtractor.php
@@ -334,7 +357,7 @@ database/
   migrations/              All seven domain tables
   seeders/ProductSeeder.php  Eight synthetic listings with deliberate edge cases
 resources/js/
-  pages/                   welcome, assistant, sessions/show, approvals/show, checkout/result…
+  pages/                   welcome, assistant, sessions/show, approvals/show, checkout/resultâ€¦
   components/trust/        Record header, stamps, checks table, product line art
   layouts/trustcart-layout.tsx
 tests/
@@ -351,6 +374,6 @@ All products, brands, merchants, prices and specifications are **fictional** and
 demonstrate the decision engine. No affiliate relationship, real inventory or merchant
 endorsement is implied.
 
-MIT licensed — see [LICENSE](LICENSE).
+MIT licensed â€” see [LICENSE](LICENSE).
 
 Design system: [DESIGN.md](DESIGN.md). Deployment notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

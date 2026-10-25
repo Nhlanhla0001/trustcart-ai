@@ -49,8 +49,8 @@ record a payment.
 - **Inertia v3 + React 19 + TypeScript** for a record-based interface
 - **Tailwind CSS v4** with a custom design system
 - **SQLite** for the demo database
-- **Gemini** for requirement parsing and narrative, with **DeepSeek** as an automatic fallback and
-  a deterministic parser when no provider is available
+- **Laravel AI SDK** (`laravel/ai`) with **Gemini** for requirement parsing and narrative,
+  **DeepSeek** as an automatic fallback, and a deterministic parser when no provider is available
 - **PayPal Orders v2** REST API, sandbox only, server-side OAuth and capture
 
 The UI is deliberately not a chat. Each decision is a document: requirement, verdict, check
@@ -126,8 +126,8 @@ executed. `[UPDATE THIS BEFORE SUBMITTING]`
 
 ## Built with
 
-`laravel` · `php` · `react` · `typescript` · `inertiajs` · `tailwindcss` · `sqlite` · `gemini` ·
-`deepseek` · `paypal-orders-v2` · `phpunit` · `playwright`
+`laravel` · `php` · `react` · `typescript` · `inertiajs` · `tailwindcss` · `sqlite` · `laravel-ai` ·
+`gemini` · `deepseek` · `paypal-orders-v2` · `phpunit` · `playwright`
 
 ## Links
 
@@ -137,8 +137,9 @@ executed. `[UPDATE THIS BEFORE SUBMITTING]`
 
 ## AI tools statement
 
-We used an AI coding assistant to help implement and review the application. The product itself
-calls Gemini (primary) and DeepSeek (fallback) at runtime for requirement parsing and narrative
+We used Laravel Boost (guidelines, skills and MCP tooling) with an AI coding assistant to help
+implement and review the application. The product itself calls Gemini (primary) and DeepSeek
+(fallback) through the Laravel AI SDK at runtime for requirement parsing and narrative
 generation. No AI tool was used to fabricate test results or payment outcomes; all stated test
 results come from the commands in `docs/TEST-RESULTS.md`.
 

@@ -77,6 +77,7 @@ class RequirementExtractor
             'monitor', 'display' => 'monitors',
             'keyboard' => 'keyboards',
             'accessory', 'mouse', 'accessories' => 'accessories',
+            'unknown' => null,
             default => $category,
         };
 

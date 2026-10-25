@@ -46,13 +46,13 @@ With a build date of 25 October 2026, there are **18 days** to the deadline.
 Judges score five equally weighted criteria (technology, design, impact, idea, presentation).
 Where the entry is strong and where it is not yet proven:
 
-| Criterion                    | Evidence in this build                                                                                                                                     | Gap                                                 |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Technological implementation | Deterministic engine separated from AI; three re-validation points; atomic capture claim; amount verification; 82 automated tests; fallback provider chain | No live PayPal transaction yet                      |
-| Design                       | "Decision record" design system; evidence tables instead of chat; mobile layouts; honest empty/error/void states                                           | Screenshots reviewed; no formal accessibility audit |
-| Impact                       | Refusal and price-change protection address real agentic-commerce risk; audit trail is a plausible procurement/compliance feature                          | No user research; no merchant validation            |
-| Idea                         | "AI that knows when not to buy" is a clear, differentiated position against autonomous-buyer demos                                                         | Category is crowded; execution must carry it        |
-| Presentation                 | Live-computed specimen, 3-minute shot list, honest limitations                                                                                             | Video and Devpost copy not produced                 |
+| Criterion                    | Evidence in this build                                                                                                                                                                  | Gap                                                 |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Technological implementation | Deterministic engine separated from AI; three re-validation points; atomic capture claim; amount verification; 85 automated tests; SDK structured output with a provider fallback chain | No live PayPal transaction yet                      |
+| Design                       | "Decision record" design system; evidence tables instead of chat; mobile layouts; honest empty/error/void states                                                                        | Screenshots reviewed; no formal accessibility audit |
+| Impact                       | Refusal and price-change protection address real agentic-commerce risk; audit trail is a plausible procurement/compliance feature                                                       | No user research; no merchant validation            |
+| Idea                         | "AI that knows when not to buy" is a clear, differentiated position against autonomous-buyer demos                                                                                      | Category is crowded; execution must carry it        |
+| Presentation                 | Live-computed specimen, 3-minute shot list, honest limitations                                                                                                                          | Video and Devpost copy not produced                 |
 
 ## Eligibility notes (South Africa)
 
