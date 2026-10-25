@@ -57,6 +57,7 @@
         "@rolldown/plugin-babel": "^0.2.3",
         "@types/node": "^22.13.5",
         "babel-plugin-react-compiler": "^1.0.0",
+        "rolldown": "^1.2.15",
         "vite-plus": "1.4.0"
     },
     "optionalDependencies": {
