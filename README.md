@@ -107,7 +107,7 @@ No payment secrets reach the browser. No card data is stored.
 Requirements: PHP 8.3+, Composer 2, Node 20+, npm, and the PHP SQLite extension.
 
 ```bash
-git clone <your-repo-url> trustcart-ai
+git clone https://github.com/Nhlanhla0001/trustcart-ai.git trustcart-ai
 cd trustcart-ai
 
 composer install
@@ -305,7 +305,7 @@ Read the threat model and residual risks in [docs/SECURITY.md](docs/SECURITY.md)
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Meaningful PayPal integration                        | Implemented server-side (Orders v2, sandbox); **not yet exercised with real sandbox credentials** |
 | Meaningful AI integration                            | Implemented (requirement parsing + grounded narrative, with fallback)                             |
-| Public repository                                    | Local git repository; **not pushed**                                                              |
+| Public repository                                    | **Public:** [github.com/Nhlanhla0001/trustcart-ai](https://github.com/Nhlanhla0001/trustcart-ai) · CI green |
 | Demo video (≤ 3 min)                                 | Script and shot list ready in [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md); **not recorded**        |
 | Devpost text submission                              | Draft in [docs/DEVPOST-SUBMISSION.md](docs/DEVPOST-SUBMISSION.md); **not submitted**              |
 | Keep project available through judging (15 Dec 2026) | Depends on deployment                                                                             |

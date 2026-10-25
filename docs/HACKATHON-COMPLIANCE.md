@@ -74,7 +74,7 @@ be useful for the public demo URL, but it is not required by the product.
 
 ## Submission checklist
 
-- [ ] Public GitHub repository with README, licence, `.env.example`, setup instructions
+- [x] Public GitHub repository with README, licence, `.env.example`, setup instructions
 - [ ] No secrets committed (verify `git log` and `.env` exclusion)
 - [ ] Deployed public demo URL that stays up through 15 December 2026
 - [ ] PayPal sandbox credentials configured on the deployed instance

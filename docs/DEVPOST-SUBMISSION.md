@@ -131,7 +131,7 @@ executed. `[UPDATE THIS BEFORE SUBMITTING]`
 
 ## Links
 
-- Repository: `[PUBLIC GITHUB URL]`
+- Repository: https://github.com/Nhlanhla0001/trustcart-ai
 - Demo: `[PUBLIC URL — must stay available through 15 Dec 2026]`
 - Video: `[YOUTUBE URL, ≤ 3 minutes]`
 
